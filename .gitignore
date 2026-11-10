@@ -1,0 +1,26 @@
+# Dependencies
+/node_modules
+/.pnpm-store
+
+# Next.js build
+/.next/
+/out/
+
+# Environment variables
+.env
+.env*.local
+
+# SQLite local database (auto-seeded on first run)
+agent.db
+*.db
+*.db-journal
+*.db-wal
+
+# TypeScript & Next.js cache
+*.tsbuildinfo
+next-env.d.ts
+*.log
+
+# Agents & Skills
+.agents/
+skills-lock.json
