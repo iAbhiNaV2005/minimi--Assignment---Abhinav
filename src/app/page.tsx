@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import {
   Search,
   Clock,
@@ -553,15 +555,70 @@ export default function ChatPage() {
                     )}
 
                     {/* Content Rendering */}
-                    <div className="prose prose-invert prose-sm max-w-none whitespace-pre-wrap leading-relaxed">
-                      {msg.content ||
-                        (msg.isStreaming && (
+                    {msg.role === 'user' ? (
+                      <div className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</div>
+                    ) : (
+                      <div className="prose prose-invert prose-sm max-w-none leading-relaxed text-gray-200">
+                        {msg.content ? (
+                          <ReactMarkdown
+                            remarkPlugins={[remarkGfm]}
+                            components={{
+                              table: ({ ...props }) => (
+                                <div className="overflow-x-auto my-3 border border-[#232c42] rounded-lg">
+                                  <table className="min-w-full divide-y divide-[#232c42] text-xs" {...props} />
+                                </div>
+                              ),
+                              thead: ({ ...props }) => (
+                                <thead className="bg-[#121724]" {...props} />
+                              ),
+                              th: ({ ...props }) => (
+                                <th className="px-3 py-2 text-left text-xs font-semibold text-gray-200 uppercase tracking-wider" {...props} />
+                              ),
+                              td: ({ ...props }) => (
+                                <td className="px-3 py-2 text-xs text-gray-300 border-t border-[#1d2436]" {...props} />
+                              ),
+                              h3: ({ ...props }) => (
+                                <h3 className="text-sm font-bold text-white mt-4 mb-2 pb-1 border-b border-[#1f2638]" {...props} />
+                              ),
+                              h4: ({ ...props }) => (
+                                <h4 className="text-xs font-semibold text-gray-100 mt-3 mb-1" {...props} />
+                              ),
+                              p: ({ ...props }) => (
+                                <p className="mb-2.5 last:mb-0 leading-relaxed text-gray-300" {...props} />
+                              ),
+                              ul: ({ ...props }) => (
+                                <ul className="list-disc pl-5 my-2 space-y-1 text-gray-300" {...props} />
+                              ),
+                              ol: ({ ...props }) => (
+                                <ol className="list-decimal pl-5 my-2 space-y-1 text-gray-300" {...props} />
+                              ),
+                              li: ({ ...props }) => (
+                                <li className="leading-relaxed" {...props} />
+                              ),
+                              strong: ({ ...props }) => (
+                                <strong className="font-semibold text-white" {...props} />
+                              ),
+                              a: ({ ...props }) => (
+                                <a className="text-blue-400 hover:text-blue-300 hover:underline font-medium" target="_blank" rel="noopener noreferrer" {...props} />
+                              ),
+                              blockquote: ({ ...props }) => (
+                                <blockquote className="border-l-2 border-blue-500/50 pl-3 py-0.5 my-2 text-gray-400 italic bg-[#101420]/50 rounded-r" {...props} />
+                              ),
+                              code: ({ ...props }) => (
+                                <code className="bg-[#171c2b] text-blue-300 px-1.5 py-0.5 rounded text-[11px] font-mono border border-[#26314c]" {...props} />
+                              ),
+                            }}
+                          >
+                            {msg.content}
+                          </ReactMarkdown>
+                        ) : msg.isStreaming ? (
                           <span className="flex items-center gap-2 text-gray-400 italic">
                             <Loader2 className="w-4 h-4 animate-spin text-blue-400" />
                             Synthesizing grounded response...
                           </span>
-                        ))}
-                    </div>
+                        ) : null}
+                      </div>
+                    )}
 
                     {/* Citations Shelf */}
                     {msg.citations && msg.citations.length > 0 && (
