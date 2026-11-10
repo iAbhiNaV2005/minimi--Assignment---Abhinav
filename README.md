@@ -62,7 +62,7 @@ npm run test:benchmark
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │ STAGE 1: INTENT & TEMPORAL DISAMBIGUATION                                   │
 │ • Current Reference: CURRENT_TIMESTAMP (Tue, Nov 10, 2026)                  │
-│ • Chrono-Node Extraction: "On Monday" ➔ [2026-11-09T00:00:00Z to 23:59:59Z]  │
+│ • Chrono-Node Extraction: "On Monday" -> [2026-11-09T00:00:00Z to 23:59:59Z]  │
 │ • Reference Resolver: Detects retrospective & comparative intent            │
 └────────────────────────────────────┬────────────────────────────────────────┘
                                      │
@@ -94,7 +94,7 @@ npm run test:benchmark
                                      │
                                      ▼
                       STREAMING SSE RESPONSE TO CLIENT
-            (Live status chips: Memory ➔ Search ➔ Delta ➔ Synthesis)
+            (Live status chips: Memory -> Search -> Delta -> Synthesis)
 ```
 
 ---

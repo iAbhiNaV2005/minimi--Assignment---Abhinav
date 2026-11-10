@@ -7,7 +7,7 @@ Our agent integrates real-time web search with an episodic temporal memory engin
 2. **Episodic Context Retrieval**: Before triggering the web, the agent checks local SQLite storage (`agent.db`) for past interactions matching the time window or referenced entities (e.g., retrieving the 5 CRM tools shortlisted on Monday, or the Postgres hosting discussion from 3 November).
 3. **Targeted Web Delta Search**: Search queries are synthesized with entity and temporal operators (e.g., `HubSpot changelog November 2026`). Multiple queries are fired concurrently via `Promise.allSettled()` using Tavily (with zero-key DuckDuckGo fallback).
 4. **Delta Audit & Grounding**: A comparative audit prompt rigorously compares the historical baseline against fresh search results, verifying what changed versus what stayed the same across pricing, seat minimums, and feature releases.
-5. **Low-Latency Streaming**: Responses stream via Server-Sent Events (SSE) with live progress chips (`Resolving Temporal` ➔ `Checking Memory` ➔ `Searching Web` ➔ `Verifying Delta` ➔ `Synthesizing`) and clickable inline Markdown citations `[1](url)` accompanied by an interactive source inspector.
+5. **Low-Latency Streaming**: Responses stream via Server-Sent Events (SSE) with live progress chips (`Resolving Temporal` -> `Checking Memory` -> `Searching Web` -> `Verifying Delta` -> `Synthesizing`) and clickable inline Markdown citations `[1](url)` accompanied by an interactive source inspector.
 
 ---
 

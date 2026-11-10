@@ -18,6 +18,10 @@ import {
   Globe,
   Loader2,
   Info,
+  BarChart3,
+  Calendar,
+  X,
+  Plus,
 } from 'lucide-react';
 
 interface CitationItem {
@@ -48,7 +52,7 @@ const BENCHMARK_PROMPTS = [
   {
     title: 'CRM Shortlist Changes',
     tag: 'Monday Baseline',
-    icon: '📊',
+    iconType: 'chart',
     prompt:
       'On Monday we shortlisted 5 CRM tools for a 20-person sales team. Has any of them changed pricing or shipped something big since?',
     desc: 'Resolves relative "Monday", recalls the 5 CRM tools from episodic memory, and audits pricing/changelog updates.',
@@ -56,7 +60,7 @@ const BENCHMARK_PROMPTS = [
   {
     title: 'Historical Turn Verification',
     tag: '3 November Turn',
-    icon: '📅',
+    iconType: 'calendar',
     prompt:
       'What did I ask you on 3 November? Is your answer still correct today?',
     desc: 'Determines the calendar date, retrieves the Postgres hosting discussion from SQLite, and verifies with live web data.',
@@ -64,7 +68,7 @@ const BENCHMARK_PROMPTS = [
   {
     title: 'Postgres Hosting Audit',
     tag: 'Last Tuesday',
-    icon: '🐘',
+    iconType: 'database',
     prompt:
       'Last Tuesday I asked you about Postgres hosting. Has any pricing changed since then?',
     desc: 'Grounds "Last Tuesday" to Nov 3, retrieves baseline tiers (Supabase, Neon, AWS RDS, Railway), and diffs current pricing.',
@@ -311,7 +315,8 @@ export default function ChatPage() {
             }}
             className="mt-4 w-full flex items-center justify-center gap-2 py-2 px-3 rounded-md bg-blue-600 hover:bg-blue-500 text-white text-xs font-medium transition-all shadow-sm"
           >
-            <span>+ New Research Turn</span>
+            <Plus className="w-3.5 h-3.5" />
+            <span>New Research Turn</span>
           </button>
         </div>
 
@@ -436,7 +441,11 @@ export default function ChatPage() {
                     >
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
-                          <span className="text-xl">{item.icon}</span>
+                          <div className="w-7 h-7 rounded-md bg-[#161c2b] border border-[#232c42] flex items-center justify-center">
+                            {item.iconType === 'chart' && <BarChart3 className="w-3.5 h-3.5 text-blue-400" />}
+                            {item.iconType === 'calendar' && <Calendar className="w-3.5 h-3.5 text-emerald-400" />}
+                            {item.iconType === 'database' && <Database className="w-3.5 h-3.5 text-purple-400" />}
+                          </div>
                           <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#1c2236] text-blue-300 border border-blue-500/20">
                             {item.tag}
                           </span>
@@ -637,9 +646,10 @@ export default function ChatPage() {
                 </div>
                 <button
                   onClick={() => setSelectedCitation(null)}
-                  className="text-gray-500 hover:text-gray-300 text-xs px-2 py-1"
+                  className="p-1 rounded text-gray-500 hover:text-gray-300 hover:bg-[#1b2133] transition-colors"
+                  title="Close Inspector"
                 >
-                  ✕ Close
+                  <X className="w-4 h-4" />
                 </button>
               </div>
 
