@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { seedDatabase, seedDatabaseIfEmpty } from '../src/db/seed';
 
 export { seedDatabase, seedDatabaseIfEmpty };

@@ -64,11 +64,10 @@ export async function executeDeltaVerification(params: {
   if (apiKey && apiKey.trim().length > 5) {
     try {
       const genAI = new GoogleGenerativeAI(apiKey);
-      // Try gemini-1.5-flash (fastest TTFT) or gemini-2.0-flash
-      const model = genAI.getGenerativeModel({
-        model: 'gemini-1.5-flash',
-        systemInstruction: SYSTEM_PROMPT,
-      });
+      // Try gemini-2.5-flash (free tier AI Studio standard) with fallback to gemini-1.5-flash
+      const modelNames = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash'];
+      let model = null;
+      let lastErr = null;
 
       const prompt = buildDeltaAuditPrompt({
         userQuery,
@@ -81,30 +80,47 @@ export async function executeDeltaVerification(params: {
         searchResultsFormatted: formattedText,
       });
 
-      const resultStream = await model.generateContentStream(prompt);
-      let fullContent = '';
+      for (const mName of modelNames) {
+        try {
+          model = genAI.getGenerativeModel({
+            model: mName,
+            systemInstruction: SYSTEM_PROMPT,
+          });
+          const resultStream = await model.generateContentStream(prompt);
+          let fullContent = '';
 
-      for await (const chunk of resultStream.stream) {
-        const text = chunk.text();
-        fullContent += text;
-        if (onToken) {
-          onToken(text);
+          for await (const chunk of resultStream.stream) {
+            const text = chunk.text();
+            fullContent += text;
+            if (onToken) {
+              onToken(text);
+            }
+          }
+
+          if (fullContent.trim().length > 0) {
+            return {
+              content: fullContent,
+              citations,
+              hasChangesDetected:
+                fullContent.toLowerCase().includes('change') ||
+                fullContent.toLowerCase().includes('shipped') ||
+                fullContent.toLowerCase().includes('updated'),
+              comparisonAudit: {
+                baselineDate: baseline.matchedDate,
+                entitiesCompared: baseline.entities,
+                summary: `Audited ${baseline.entities.length} entities against ${citations.length} web sources with ${mName}.`,
+              },
+            };
+          }
+        } catch (modelErr: any) {
+          lastErr = modelErr;
+          continue;
         }
       }
 
-      return {
-        content: fullContent,
-        citations,
-        hasChangesDetected:
-          fullContent.toLowerCase().includes('change') ||
-          fullContent.toLowerCase().includes('shipped') ||
-          fullContent.toLowerCase().includes('updated'),
-        comparisonAudit: {
-          baselineDate: baseline.matchedDate,
-          entitiesCompared: baseline.entities,
-          summary: `Audited ${baseline.entities.length} entities against ${citations.length} web sources.`,
-        },
-      };
+      if (lastErr) {
+        throw lastErr;
+      }
     } catch (err: any) {
       console.warn('[DeltaEngine] Gemini API call failed, falling back to deterministic synthesis:', err?.message || err);
     }
